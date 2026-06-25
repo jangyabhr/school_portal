@@ -16,22 +16,26 @@
   <h2>🏫 Odisha Adarsha Vidyalaya</h2>
   <p id="msg">Connecting to school portal…</p>
   <script>
-    fetch('url.txt?t=' + Date.now())
-      .then(r => r.text())
-      .then(url => {
+    var token = new URLSearchParams(window.location.search).get("token");
+    fetch("url.txt?t=" + Date.now())
+      .then(function(r){ return r.text(); })
+      .then(function(url){
         url = url.trim();
-        if (!url || url.startsWith('#')) {
-          document.getElementById('msg').innerHTML =
-            '<span class="offline">Server is currently offline.</span><br>Ask the admin to restart.';
+        if (!url || url.charAt(0) === "#") {
+          document.getElementById("msg").innerHTML =
+            "<span class=\"offline\">Server is currently offline.</span><br>Ask the admin to restart.";
           return;
         }
-        document.getElementById('msg').innerHTML =
-          'Redirecting… <a href="' + url + '/teacher">' + url + '/teacher</a>';
-        window.location.replace(url + '/teacher');
+        var dest = token
+          ? url + "/teacher/auth?token=" + encodeURIComponent(token)
+          : url + "/teacher";
+        document.getElementById("msg").innerHTML =
+          "Redirecting… <a href=\"" + dest + "\">" + dest + "</a>";
+        window.location.replace(dest);
       })
-      .catch(() => {
-        document.getElementById('msg').innerHTML =
-          '<span class="offline">Server is offline or unreachable.</span>';
+      .catch(function(){
+        document.getElementById("msg").innerHTML =
+          "<span class=\"offline\">Server is offline or unreachable.</span>";
       });
   </script>
 </body>
