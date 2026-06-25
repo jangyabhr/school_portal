@@ -45,7 +45,10 @@
   </div>
   <script>
     var token = new URLSearchParams(window.location.search).get("token");
-    fetch("url.txt?t=" + Date.now())
+    // Fetch from raw.githubusercontent.com — updates immediately when committed,
+    // no GitHub Pages CDN propagation delay.
+    var RAW = "https://raw.githubusercontent.com/jangyabhr/school_portal/main/url.txt";
+    fetch(RAW + "?t=" + Date.now())
       .then(function(r){return r.text();})
       .then(function(url){
         url = url.trim();
