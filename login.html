@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+  <html><head><meta charset="UTF-8">
+  <script>
+  fetch('url.txt?_=' + Date.now())
+    .then(r => r.text())
+    .then(url => { window.location.replace(url.trim() +
+  '/teacher/login'); });
+  </script>
+  <noscript>Enable JavaScript to continue.</noscript>
+  </head><body></body></html>
