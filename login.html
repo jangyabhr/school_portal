@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -7,47 +7,72 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="School Portal">
   <meta name="theme-color" content="#0969da">
-  <title>Teacher Portal — Get Your Link</title>
+  <link rel="manifest" href="manifest.json">
+  <title>Teacher Portal — Login</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:sans-serif;background:#f6f8fa;min-height:100vh;
-         display:flex;align-items:center;justify-content:center;}
-    .card{background:#fff;border:1px solid #d0d7de;border-radius:12px;
-          padding:32px 24px;text-align:center;max-width:340px;width:90%;
-          box-shadow:0 4px 16px rgba(0,0,0,.08);}
-    .icon{font-size:48px;margin-bottom:12px;}
-    h2{font-size:20px;color:#1f2328;margin-bottom:6px;}
-    .sub{font-size:14px;color:#59636e;margin-bottom:24px;}
-    .loading{color:#59636e;font-size:14px;}
-    .offline{color:#cf222e;font-size:14px;margin-top:8px;}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+         background:#f6f8fa;color:#1f2328;min-height:100vh;
+         display:flex;align-items:center;justify-content:center;padding:24px;}
+    .card{background:#fff;border:1px solid #d0d7de;border-radius:10px;
+          padding:32px;width:100%;max-width:380px;
+          box-shadow:0 4px 16px rgba(0,0,0,.07);}
+    h1{font-size:1.2rem;margin-bottom:4px;}
+    .sub{color:#57606a;font-size:.88rem;margin-bottom:24px;}
+    label{display:block;font-size:.85rem;font-weight:600;margin-bottom:5px;}
+    input{width:100%;padding:9px 12px;border:1px solid #d0d7de;border-radius:6px;
+          font-size:1rem;background:#fff;outline:none;margin-bottom:16px;}
+    input:focus{border-color:#0969da;box-shadow:0 0 0 3px rgba(9,105,218,.15);}
+    button{width:100%;padding:10px;border:none;border-radius:6px;
+           background:#0969da;color:#fff;font-size:1rem;font-weight:600;
+           cursor:pointer;margin-top:4px;}
+    button:disabled{opacity:.55;cursor:default;}
+    .status{font-size:12px;color:#57606a;text-align:center;margin-top:10px;min-height:18px;}
+    .error{color:#cf222e;}
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="icon">&#128106;</div>
-    <h2>Teacher Portal</h2>
-    <div class="sub">Getting your login page&#8230;</div>
-    <p id="status" class="loading">Checking server&#8230;</p>
-  </div>
-  <script>
-    var API = "https://api.github.com/repos/oavjnp/school_portal/contents/url.txt";
-    fetch(API, {headers: {"Accept": "application/vnd.github.raw+json", "X-GitHub-Api-Version": "2022-11-28"}})
-      .then(function(r){ return r.text(); })
-      .then(function(url){
-        url = url.trim();
-        if(!url || url.charAt(0) === "#"){
-          var s = document.getElementById("status");
-          s.className = "offline";
-          s.textContent = "Server is offline — ask admin to restart.";
-          return;
-        }
-        window.location.replace(url + "/teacher/login");
-      })
-      .catch(function(){
-        var s = document.getElementById("status");
-        s.className = "offline";
-        s.textContent = "Could not reach server — try again later.";
-      });
-  </script>
+<div class="card">
+  <h1>&#128104;&#8205;&#127979; Teacher Portal</h1>
+  <p class="sub">Odisha Adarsha Vidyalaya</p>
+  <form id="f" method="post">
+    <label for="name">Your name</label>
+    <input type="text" id="name" name="name" placeholder="e.g. Sujata Panda"
+           required autocomplete="name" autocorrect="off">
+    <label for="pwd">Password</label>
+    <input type="password" id="pwd" name="password"
+           required autocomplete="current-password">
+    <button type="submit" id="btn" disabled>Open Portal &rarr;</button>
+    <p class="status" id="st">Connecting&hellip;</p>
+  </form>
+</div>
+<script>
+var API="https://api.github.com/repos/oavjnp/school_portal/contents/url.txt";
+fetch(API,{headers:{"Accept":"application/vnd.github.raw+json","X-GitHub-Api-Version":"2022-11-28"}})
+  .then(function(r){return r.text();})
+  .then(function(url){
+    url=url.trim();
+    var st=document.getElementById("st");
+    var btn=document.getElementById("btn");
+    if(!url||url.charAt(0)==="#"){
+      st.className="status error";
+      st.textContent="Server offline — ask admin to restart.";
+      return;
+    }
+    document.getElementById("f").action=url+"/teacher/login";
+    btn.disabled=false;
+    st.textContent="✓ Connected";
+    setTimeout(function(){st.textContent="";},2000);
+  })
+  .catch(function(){
+    var st=document.getElementById("st");
+    st.className="status error";
+    st.textContent="Could not reach server — check internet.";
+  });
+document.getElementById("f").addEventListener("submit",function(){
+  var btn=document.getElementById("btn");
+  btn.disabled=true;btn.textContent="Opening…";
+});
+</script>
 </body>
 </html>
