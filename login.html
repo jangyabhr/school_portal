@@ -79,6 +79,13 @@
     <button type="submit" class="btn" id="submitBtn" disabled>Connecting…</button>
     <p class="status" id="statusLine"></p>
   </form>
+
+  <p style="text-align:center;margin-top:20px;border-top:1px solid #eee;padding-top:14px;">
+    <a id="adminLink" href="#" onclick="openAdminLogin(event)"
+       style="font-size:.78rem;color:#57606a;text-decoration:none;">
+      🔐 Admin login
+    </a>
+  </p>
 </div>
 
 <script>
@@ -155,6 +162,7 @@ window.addEventListener('beforeinstallprompt', function(e) { e.preventDefault();
   setStatus('Connecting to school server…');
   fetchTunnelUrl().then(url => {
     tunnelUrl = url;
+    window._tunnelUrl = url;
     setStatus('');
     document.getElementById('submitBtn').disabled = false;
     document.getElementById('submitBtn').textContent = 'Open Portal →';
@@ -230,6 +238,20 @@ window.addEventListener('beforeinstallprompt', function(e) { e.preventDefault();
     }
   });
 })();
+
+
+function openAdminLogin(e) {
+  e.preventDefault();
+  if (window._tunnelUrl) {
+    location.href = window._tunnelUrl + '/login';
+  } else {
+    var API = 'https://api.github.com/repos/oavjnp/school_portal/contents/url.txt';
+    fetch(API, {headers:{'Accept':'application/vnd.github.raw+json','X-GitHub-Api-Version':'2022-11-28'}})
+      .then(function(r){ return r.text(); })
+      .then(function(url){ url = url.trim(); if (url && url[0] !== '#') location.href = url + '/login'; })
+      .catch(function(){ alert('Cannot reach server.'); });
+  }
+}
 
 function doInstall() {
   if (_deferredInstall) {
