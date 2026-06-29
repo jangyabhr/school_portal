@@ -10,77 +10,39 @@
   <link rel="manifest" href="manifest.json">
   <title>School Portal</title>
   <style>
-    *{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:sans-serif;background:#f6f8fa;min-height:100vh;
          display:flex;align-items:center;justify-content:center;}
     .card{background:#fff;border:1px solid #d0d7de;border-radius:12px;
-          padding:32px 24px;text-align:center;max-width:340px;width:90%;
-          box-shadow:0 4px 16px rgba(0,0,0,.08);}
+          padding:32px 24px;text-align:center;max-width:320px;width:90%;}
     .icon{font-size:48px;margin-bottom:12px;}
-    h2{font-size:20px;color:#1f2328;margin-bottom:6px;}
-    .sub{font-size:14px;color:#59636e;margin-bottom:24px;}
-    .btn{display:block;width:100%;padding:13px;background:#0969da;color:#fff;
-         border:none;border-radius:8px;font-size:16px;font-weight:600;
-         cursor:pointer;text-decoration:none;margin-bottom:12px;}
-    .btn:hover{background:#0860ca;}
-    .hint{font-size:12px;color:#59636e;line-height:1.6;
-          border-top:1px solid #eee;padding-top:12px;margin-top:4px;}
-    .debug{font-size:11px;color:#59636e;margin-top:16px;padding:8px;
-           background:#f6f8fa;border:1px solid #d0d7de;border-radius:6px;
-           text-align:left;word-break:break-all;line-height:1.7;}
-    .offline{color:#cf222e;font-size:14px;margin-top:8px;}
-    .loading{color:#59636e;font-size:14px;}
+    p{font-size:14px;color:#59636e;}
   </style>
 </head>
 <body>
   <div class="card">
     <div class="icon">🏫</div>
-    <h2>School Portal</h2>
-    <div class="sub">Odisha Adarsha Vidyalaya</div>
-    <a id="btn" class="btn" href="#" style="display:none">Open School Portal →</a>
-    <p id="status" class="loading">Checking server…</p>
-    <div class="debug" id="debug" style="display:none">
-      <strong>url.txt:</strong> <span id="dbg-url"></span><br>
-      <strong>dest:</strong> <span id="dbg-dest"></span>
-    </div>
-    <p class="hint" id="hint" style="display:none">
-      💡 <strong>Save this page</strong> to your home screen<br>
-      (⋮ menu → Add to Home Screen)<br>
-      so you can open the portal anytime<br>
-      without coming back to Discord.
-    </p>
+    <p id="msg">Opening portal…</p>
   </div>
   <script>
-    var token = new URLSearchParams(window.location.search).get("token");
-    // GitHub API — no CDN, always returns the live file content immediately
+  (function() {
+    var token = new URLSearchParams(location.search).get("token");
+    if (!token) {
+      location.replace("login.html");
+      return;
+    }
     var API = "https://api.github.com/repos/oavjnp/school_portal/contents/url.txt";
-    fetch(API, {headers: {"Accept": "application/vnd.github.raw+json", "X-GitHub-Api-Version": "2022-11-28"}})
+    fetch(API, {headers:{"Accept":"application/vnd.github.raw+json","X-GitHub-Api-Version":"2022-11-28"}})
       .then(function(r){ return r.text(); })
       .then(function(url){
         url = url.trim();
-        var status = document.getElementById("status");
-        if(!url || url.charAt(0)==="#"){
-          status.className="offline";
-          status.textContent="Server is offline — ask admin to restart.";
+        if (!url || url.charAt(0) === "#") {
+          location.replace("login.html?error=Server+offline");
           return;
         }
-        var dest = token
-          ? url + "/teacher/auth?token=" + encodeURIComponent(token)
-          : url + "/teacher";
-        document.getElementById("dbg-url").textContent = url;
-        document.getElementById("dbg-dest").textContent = dest;
-        document.getElementById("debug").style.display = "block";
-        var btn = document.getElementById("btn");
-        btn.href = dest;
-        btn.style.display = "block";
-        status.style.display = "none";
-        document.getElementById("hint").style.display = "block";
+        location.replace(url + "/teacher/auth?token=" + encodeURIComponent(token));
       })
-      .catch(function(){
-        var status = document.getElementById("status");
-        status.className="offline";
-        status.textContent="Server offline or unreachable.";
-      });
+      .catch(function(){ location.replace("login.html?error=Server+unreachable"); });
+  })();
   </script>
 </body>
 </html>
