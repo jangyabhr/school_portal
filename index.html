@@ -30,7 +30,7 @@
       location.replace("login.html");
       return;
     }
-    fetch('https://raw.githubusercontent.com/oavjnp/school_portal/main/url.txt', {cache:'no-store'})
+    fetch('https://raw.githubusercontent.com/oavjnp/school_portal/main/url.txt?t='+Date.now(), {cache:'no-store'})
       .then(function(r){ return r.ok ? r.text() : Promise.reject(); })
       .then(function(url){
         url = url.trim();
